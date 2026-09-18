@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>unfinished.</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=PT+Sans&display=swap" rel="stylesheet">
+
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            background: #000;
+            overflow: hidden;
+        }
+
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #warning {
+            color: #fff;
+            font-family: "PT Sans", sans-serif;
+            font-size: 18px;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            pointer-events: none;
+            max-width: 90%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="warning">
+        Warning: This game contains mature themes and may not be suitable for children or sensitive players.
+    </div>
+
+    <script>
+        const warning = document.getElementById("warning");
+
+        setTimeout(() => {
+            warning.style.opacity = "1";
+
+            setTimeout(() => {
+                warning.style.transition = "opacity 1.2s ease";
+                warning.style.opacity = "0";
+            }, 2700);
+        }, 3000);
+    </script>
+</body>
+</html>
