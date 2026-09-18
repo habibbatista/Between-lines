@@ -80,6 +80,8 @@
             z-index: 2;
         }
 
+        /* MAIN 16:9 SCENE */
+
         #scene {
             position: absolute;
 
@@ -99,6 +101,8 @@
 
             overflow: hidden;
         }
+
+        /* CHECKERBOARD */
 
         #grid {
             position: absolute;
@@ -139,6 +143,8 @@
         .white {
             background: #fff;
         }
+
+        /* ACCENTS */
 
         #topAccent {
             position: absolute;
@@ -192,6 +198,8 @@
                 fadeAccents 1.5s ease forwards;
         }
 
+        /* BUTTON */
+
         .button {
             font-family: "PT Sans", sans-serif;
             font-size: 15px;
@@ -208,6 +216,114 @@
 
             box-shadow:
                 0 2px 8px rgba(80, 70, 120, 0.15);
+        }
+
+        /* TITLE SCREEN */
+
+        #titleScreen {
+            position: absolute;
+            inset: 0;
+
+            z-index: 10;
+
+            display: flex;
+            align-items: flex-start;
+            justify-content: flex-start;
+
+            background: #777;
+
+            opacity: 0;
+            pointer-events: none;
+
+            transition: opacity 0.8s ease;
+
+            overflow: hidden;
+        }
+
+        #titleScreen.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* FINE STATIC */
+
+        #static {
+            position: absolute;
+            inset: 0;
+
+            width: 100%;
+            height: 100%;
+
+            /*
+                High-resolution canvas so individual pixels
+                aren't visibly chunky when scaled.
+            */
+
+            image-rendering: auto;
+
+            opacity: 0.68;
+
+            filter:
+                contrast(1.08)
+                blur(0.15px);
+
+            z-index: 0;
+        }
+
+        /* VIGNETTE */
+
+        #staticVignette {
+            position: absolute;
+            inset: 0;
+
+            background:
+                radial-gradient(
+                    ellipse at center,
+                    rgba(0, 0, 0, 0) 30%,
+                    rgba(0, 0, 0, 0.18) 58%,
+                    rgba(0, 0, 0, 0.48) 100%
+                );
+
+            z-index: 1;
+
+            pointer-events: none;
+        }
+
+        /* ERROR TEXT */
+
+        #titleText {
+            position: relative;
+
+            z-index: 2;
+
+            margin-top: 42px;
+            margin-left: 52px;
+            margin-right: 52px;
+
+            width: auto;
+            max-width: 650px;
+
+            color: #000;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            font-size: 20px;
+            font-weight: 400;
+
+            line-height: 1.35;
+
+            text-align: left;
+
+            text-shadow:
+                0 1px 2px rgba(255, 255, 255, 0.25);
+
+            user-select: none;
+
+            animation:
+                textFlicker 0.18s steps(2, end) infinite;
         }
 
         /* ROTATE SCREEN */
@@ -246,7 +362,7 @@
             gap: 12px;
         }
 
-        /* iPHONE 15 PRO ANIMATION */
+        /* iPHONE 15 PRO */
 
         #phoneAnimation {
             width: 72px;
@@ -281,8 +397,6 @@
             overflow: visible;
         }
 
-        /* DISPLAY */
-
         #phoneScreen {
             position: absolute;
 
@@ -295,10 +409,7 @@
             z-index: 1;
         }
 
-        /*
-            SMALL DYNAMIC ISLAND
-            White, centered at the very top.
-        */
+        /* SMALL WHITE DYNAMIC ISLAND */
 
         #dynamicIsland {
             position: absolute;
@@ -393,6 +504,8 @@
             opacity: 0.65;
         }
 
+        /* ANIMATIONS */
+
         @keyframes rotatePhone {
             0% {
                 transform: rotate(0deg);
@@ -452,12 +565,38 @@
             }
         }
 
+        @keyframes textFlicker {
+            0% {
+                opacity: 0.94;
+            }
+
+            30% {
+                opacity: 1;
+            }
+
+            55% {
+                opacity: 0.9;
+            }
+
+            75% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.95;
+            }
+        }
+
+        /* 16:9 */
+
         @media (orientation: landscape) and (min-aspect-ratio: 16/9) {
             #scene {
                 width: 177.7777778dvh;
                 height: 100dvh;
             }
         }
+
+        /* PORTRAIT BLOCKER */
 
         @media (orientation: portrait) {
             #rotateScreen {
@@ -486,7 +625,24 @@
 
         </div>
 
+        <!-- TITLE SCREEN -->
+
+        <div id="titleScreen">
+
+            <canvas id="static"></canvas>
+
+            <div id="staticVignette"></div>
+
+            <div id="titleText">
+                An exception has occurred.<br>
+                title screen.dll not found in user/Desktop/FNE.
+            </div>
+
+        </div>
+
     </div>
+
+    <!-- PORTRAIT ROTATION SCREEN -->
 
     <div id="rotateScreen">
 
@@ -533,6 +689,17 @@
         const grid =
             document.getElementById("grid");
 
+        const titleScreen =
+            document.getElementById("titleScreen");
+
+        const staticCanvas =
+            document.getElementById("static");
+
+        const staticContext =
+            staticCanvas.getContext("2d");
+
+        /* CREATE CHECKERBOARD */
+
         for (let row = 0; row < 100; row++) {
 
             for (let column = 0; column < 100; column++) {
@@ -552,6 +719,97 @@
             }
         }
 
+        /* FINE STATIC */
+
+        function resizeStatic() {
+
+            const scale = 2;
+
+            staticCanvas.width =
+                Math.max(
+                    640,
+                    Math.ceil(window.innerWidth * scale)
+                );
+
+            staticCanvas.height =
+                Math.max(
+                    360,
+                    Math.ceil(window.innerHeight * scale)
+                );
+        }
+
+        function generateStatic() {
+
+            const width =
+                staticCanvas.width;
+
+            const height =
+                staticCanvas.height;
+
+            const image =
+                staticContext.createImageData(
+                    width,
+                    height
+                );
+
+            const pixels =
+                image.data;
+
+            for (
+                let index = 0;
+                index < pixels.length;
+                index += 4
+            ) {
+
+                const noise =
+                    Math.random() * 255;
+
+                const brightness =
+                    noise * 0.72 +
+                    Math.random() * 45;
+
+                pixels[index] =
+                    brightness;
+
+                pixels[index + 1] =
+                    brightness;
+
+                pixels[index + 2] =
+                    brightness;
+
+                pixels[index + 3] =
+                    255;
+            }
+
+            staticContext.putImageData(
+                image,
+                0,
+                0
+            );
+        }
+
+        function staticLoop() {
+
+            if (
+                titleScreen.classList.contains("show")
+            ) {
+                generateStatic();
+            }
+
+            requestAnimationFrame(staticLoop);
+        }
+
+        resizeStatic();
+
+        window.addEventListener(
+            "resize",
+            resizeStatic
+        );
+
+        staticLoop();
+
+        /* INTRO SEQUENCE */
+
         setTimeout(() => {
 
             warning.style.opacity = "1";
@@ -570,6 +828,17 @@
                     setTimeout(() => {
 
                         grid.classList.add("show");
+
+                        /*
+                            The title screen is guaranteed
+                            to appear every time.
+                        */
+
+                        setTimeout(() => {
+
+                            titleScreen.classList.add("show");
+
+                        }, 5500);
 
                     }, 800);
 
