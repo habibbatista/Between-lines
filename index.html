@@ -2,19 +2,39 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
+
     <meta name="theme-color" content="#000000">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <meta
+        name="apple-mobile-web-app-capable"
+        content="yes"
+    >
+
+    <meta
+        name="apple-mobile-web-app-status-bar-style"
+        content="black-translucent"
+    >
+
+    <link rel="manifest" href="/manifest.json">
 
     <title>unfinished.</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=PT+Sans&display=swap" rel="stylesheet">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=PT+Sans&display=swap"
+        rel="stylesheet"
+    >
 
     <style>
-        html, body {
+        html,
+        body {
             width: 100%;
             height: 100%;
             margin: 0;
@@ -44,41 +64,60 @@
             font-size: 10px;
             line-height: 1.3;
             text-align: center;
+
             opacity: 0;
             transition: opacity 0.2s ease;
+
             max-width: 360px;
             width: 70%;
+
             position: absolute;
             left: 50%;
             top: 50%;
+
             transform: translate(-50%, -50%);
+
             z-index: 2;
         }
 
         #scene {
             position: absolute;
+
             width: 100%;
-            aspect-ratio: 16 / 10;
+            aspect-ratio: 16 / 9;
             max-height: 100%;
+
             left: 50%;
             top: 50%;
+
             transform: translate(-50%, -50%);
+
             background: #fff;
+
             opacity: 0;
             transition: opacity 1.2s ease;
+
             overflow: hidden;
         }
 
         #grid {
             position: absolute;
+
             width: 220%;
             height: 220%;
+
             left: 50%;
             top: 50%;
+
             display: grid;
+
             grid-template-columns: repeat(100, 20px);
             grid-template-rows: repeat(100, 20px);
-            transform: translate(-50%, -50%) rotate(-25deg);
+
+            transform:
+                translate(-50%, -50%)
+                rotate(-25deg);
+
             opacity: 0;
         }
 
@@ -103,10 +142,13 @@
 
         #topAccent {
             position: absolute;
+
             top: 0;
             left: 0;
+
             width: 100%;
             height: 55px;
+
             background: linear-gradient(
                 to bottom,
                 rgba(120, 155, 225, 0.22) 0%,
@@ -114,17 +156,22 @@
                 rgba(180, 170, 230, 0.06) 55%,
                 rgba(255, 255, 255, 0) 100%
             );
+
             z-index: 3;
             pointer-events: none;
+
             opacity: 0;
         }
 
         #bottomAccent {
             position: absolute;
+
             bottom: 0;
             left: 0;
+
             width: 100%;
             height: 60px;
+
             background: linear-gradient(
                 to top,
                 rgba(205, 195, 225, 0.20) 0%,
@@ -132,26 +179,240 @@
                 rgba(238, 230, 242, 0.05) 55%,
                 rgba(255, 255, 255, 0) 100%
             );
+
             z-index: 3;
             pointer-events: none;
+
             opacity: 0;
         }
 
         #grid.show ~ #topAccent,
         #grid.show ~ #bottomAccent {
-            animation: fadeAccents 1.5s ease forwards;
+            animation:
+                fadeAccents 1.5s ease forwards;
         }
 
         .button {
             font-family: "PT Sans", sans-serif;
             font-size: 15px;
+
             padding: 7px 14px;
+
             border: none;
             border-radius: 7px;
+
             cursor: pointer;
+
             background: rgba(255, 255, 255, 0.92);
             color: #333;
-            box-shadow: 0 2px 8px rgba(80, 70, 120, 0.15);
+
+            box-shadow:
+                0 2px 8px rgba(80, 70, 120, 0.15);
+        }
+
+        /* ROTATE SCREEN */
+
+        #rotateScreen {
+            position: fixed;
+            inset: 0;
+
+            z-index: 9999;
+
+            display: none;
+
+            align-items: center;
+            justify-content: center;
+
+            background: #000;
+            color: #fff;
+
+            font-family: "PT Sans", sans-serif;
+            text-align: center;
+
+            padding:
+                env(safe-area-inset-top)
+                env(safe-area-inset-right)
+                env(safe-area-inset-bottom)
+                env(safe-area-inset-left);
+
+            box-sizing: border-box;
+        }
+
+        #rotateContent {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            gap: 12px;
+        }
+
+        /* iPHONE 15 PRO ANIMATION */
+
+        #phoneAnimation {
+            width: 72px;
+            height: 72px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #phone {
+            position: relative;
+
+            width: 28px;
+            height: 58px;
+
+            box-sizing: border-box;
+
+            border: 1.5px solid #d8d8d8;
+            border-radius: 7px;
+
+            background: #101010;
+
+            box-shadow:
+                0 0 0 1px rgba(255, 255, 255, 0.08);
+
+            transform-origin: center;
+
+            animation:
+                rotatePhone 2.8s ease-in-out infinite;
+
+            overflow: visible;
+        }
+
+        /* DISPLAY */
+
+        #phoneScreen {
+            position: absolute;
+
+            inset: 2px;
+
+            border-radius: 5px;
+
+            background: #090909;
+
+            z-index: 1;
+        }
+
+        /*
+            SMALL DYNAMIC ISLAND
+            White, centered at the very top.
+        */
+
+        #dynamicIsland {
+            position: absolute;
+
+            top: 4px;
+            left: 50%;
+
+            width: 10px;
+            height: 2.5px;
+
+            transform: translateX(-50%);
+
+            border-radius: 999px;
+
+            background: #fff;
+
+            z-index: 3;
+        }
+
+        /* ACTION BUTTON */
+
+        #actionButton {
+            position: absolute;
+
+            left: -3px;
+            top: 7px;
+
+            width: 1.5px;
+            height: 5px;
+
+            border-radius: 2px;
+
+            background: #d8d8d8;
+
+            z-index: 4;
+        }
+
+        /* VOLUME BUTTONS */
+
+        #volumeUp,
+        #volumeDown {
+            position: absolute;
+
+            left: -3px;
+
+            width: 1.5px;
+
+            border-radius: 2px;
+
+            background: #d8d8d8;
+
+            z-index: 4;
+        }
+
+        #volumeUp {
+            top: 17px;
+            height: 7px;
+        }
+
+        #volumeDown {
+            top: 27px;
+            height: 9px;
+        }
+
+        /* SIDE BUTTON */
+
+        #sideButton {
+            position: absolute;
+
+            right: -3px;
+            top: 22px;
+
+            width: 1.5px;
+            height: 11px;
+
+            border-radius: 2px;
+
+            background: #d8d8d8;
+
+            z-index: 4;
+        }
+
+        #rotateText {
+            font-size: 16px;
+            line-height: 1.35;
+        }
+
+        #rotateSubtext {
+            font-size: 11px;
+            line-height: 1.35;
+
+            opacity: 0.65;
+        }
+
+        @keyframes rotatePhone {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            25% {
+                transform: rotate(0deg);
+            }
+
+            52% {
+                transform: rotate(90deg);
+            }
+
+            72% {
+                transform: rotate(90deg);
+            }
+
+            100% {
+                transform: rotate(0deg);
+            }
         }
 
         @keyframes fadeGrid {
@@ -176,73 +437,148 @@
 
         @keyframes scrollGrid {
             from {
-                transform: translate(-50%, -50%) rotate(-25deg);
+                transform:
+                    translate(-50%, -50%)
+                    rotate(-25deg);
             }
 
             to {
-                transform: translate(
-                    calc(-50% + 40px),
-                    calc(-50% - 40px)
-                ) rotate(-25deg);
+                transform:
+                    translate(
+                        calc(-50% + 40px),
+                        calc(-50% - 40px)
+                    )
+                    rotate(-25deg);
             }
         }
 
-        @media (orientation: landscape) and (min-aspect-ratio: 16/10) {
+        @media (orientation: landscape) and (min-aspect-ratio: 16/9) {
             #scene {
-                width: 160dvh;
+                width: 177.7777778dvh;
                 height: 100dvh;
+            }
+        }
+
+        @media (orientation: portrait) {
+            #rotateScreen {
+                display: flex;
             }
         }
     </style>
 </head>
 
 <body>
+
     <div id="game">
+
         <div id="warning">
-            Warning: This game contains mature themes and may not be suitable for children or sensitive players.
+            Warning: This game contains mature themes and may not be suitable
+            for children or sensitive players.
         </div>
 
         <div id="scene">
+
             <div id="grid"></div>
 
             <div id="topAccent"></div>
+
             <div id="bottomAccent"></div>
+
         </div>
+
+    </div>
+
+    <div id="rotateScreen">
+
+        <div id="rotateContent">
+
+            <div id="phoneAnimation">
+
+                <div id="phone">
+
+                    <div id="phoneScreen"></div>
+
+                    <div id="dynamicIsland"></div>
+
+                    <div id="actionButton"></div>
+
+                    <div id="volumeUp"></div>
+                    <div id="volumeDown"></div>
+
+                    <div id="sideButton"></div>
+
+                </div>
+
+            </div>
+
+            <div id="rotateText">
+                Please rotate your device
+            </div>
+
+            <div id="rotateSubtext">
+                This game can only be played in landscape.
+            </div>
+
+        </div>
+
     </div>
 
     <script>
-        const warning = document.getElementById("warning");
-        const scene = document.getElementById("scene");
-        const grid = document.getElementById("grid");
+        const warning =
+            document.getElementById("warning");
+
+        const scene =
+            document.getElementById("scene");
+
+        const grid =
+            document.getElementById("grid");
 
         for (let row = 0; row < 100; row++) {
+
             for (let column = 0; column < 100; column++) {
-                const tile = document.createElement("div");
+
+                const tile =
+                    document.createElement("div");
 
                 tile.className =
                     "tile " +
-                    ((row + column) % 2 === 0 ? "blue" : "white");
+                    (
+                        (row + column) % 2 === 0
+                            ? "blue"
+                            : "white"
+                    );
 
                 grid.appendChild(tile);
             }
         }
 
         setTimeout(() => {
+
             warning.style.opacity = "1";
 
             setTimeout(() => {
-                warning.style.transition = "opacity 1.5s ease";
+
+                warning.style.transition =
+                    "opacity 1.5s ease";
+
                 warning.style.opacity = "0";
 
                 setTimeout(() => {
+
                     scene.style.opacity = "1";
 
                     setTimeout(() => {
+
                         grid.classList.add("show");
+
                     }, 800);
+
                 }, 1500);
+
             }, 2700);
+
         }, 3000);
     </script>
+
 </body>
 </html>
