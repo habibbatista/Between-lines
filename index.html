@@ -901,6 +901,18 @@
 
         #scene {
             --u: 6.4px;
+
+            /* the unscaled unit (1% of the scene width), kept for scaling below */
+            --U: 6.4px;
+        }
+
+        /* Evermore OS and the Settings / Load / Name panels are drawn at a
+           "desktop" size: smaller than the touch-sized game menus.
+           --k comes from Settings -> UI Size (default 65%). */
+
+        #os,
+        .overlay {
+            --u: calc(var(--U) * var(--k, 0.65));
         }
 
         #titleCard {
@@ -1397,6 +1409,346 @@
         }
 
         /* ============================================================
+           SAVE / LOAD SCREEN
+           (same curved blue bar along the bottom as the title screen)
+           ============================================================ */
+
+        #fileScreen {
+            position: absolute;
+            inset: 0;
+
+            z-index: 12;
+
+            overflow: hidden;
+
+            font-family:
+                "Fredoka",
+                "Arial Rounded MT Bold",
+                "PT Sans",
+                sans-serif;
+
+            background: #fff;
+
+            opacity: 0;
+            pointer-events: none;
+
+            transition: opacity 0.25s ease;
+
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        #fileScreen.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* the game's tilted, scrolling checkerboard */
+
+        #fsChecker {
+            position: absolute;
+
+            left: 50%;
+            top: 50%;
+
+            width: calc(var(--u) * 170);
+            height: calc(var(--u) * 170);
+
+            margin: calc(var(--u) * -85) 0 0 calc(var(--u) * -85);
+
+            background:
+                conic-gradient(
+                    #6bb7f0 25%,
+                    #fff 0 50%,
+                    #6bb7f0 0 75%,
+                    #fff 0
+                )
+                0 0 / calc(var(--u) * 6) calc(var(--u) * 6);
+
+            transform: rotate(-25deg);
+
+            animation: fsScroll 10s linear infinite;
+        }
+
+        @keyframes fsScroll {
+            to {
+                background-position: calc(var(--u) * 6) 0;
+            }
+        }
+
+        #fsTitle {
+            position: absolute;
+
+            left: calc(var(--u) * 3.2);
+            top: calc(var(--u) * 2);
+
+            z-index: 3;
+
+            font-size: calc(var(--u) * 4.6);
+            font-weight: 600;
+            line-height: 1.1;
+
+            color: #fff;
+
+            text-shadow:
+                calc(var(--u) * 0.260) calc(var(--u) * 0.000) #3d8fda,
+                calc(var(--u) * -0.260) calc(var(--u) * 0.000) #3d8fda,
+                calc(var(--u) * 0.000) calc(var(--u) * 0.260) #3d8fda,
+                calc(var(--u) * 0.000) calc(var(--u) * -0.260) #3d8fda,
+                calc(var(--u) * 0.182) calc(var(--u) * 0.182) #3d8fda,
+                calc(var(--u) * -0.182) calc(var(--u) * 0.182) #3d8fda,
+                calc(var(--u) * 0.182) calc(var(--u) * -0.182) #3d8fda,
+                calc(var(--u) * -0.182) calc(var(--u) * -0.182) #3d8fda;
+        }
+
+        /* the bar: same curved shape and colors as the title menu */
+
+        #fsMenu {
+            position: absolute;
+
+            left: 0;
+            right: 0;
+            bottom: 0;
+
+            height: calc(var(--u) * 15);
+
+            z-index: 3;
+
+            box-sizing: border-box;
+            padding-top: calc(var(--u) * 2.4);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: calc(var(--u) * 4);
+        }
+
+        #fsMenu::before {
+            content: "";
+
+            position: absolute;
+
+            left: -25%;
+            width: 150%;
+
+            top: 0;
+            height: 200%;
+
+            z-index: -1;
+
+            box-sizing: border-box;
+
+            background: #dcedfb;
+
+            border-top: calc(var(--u) * 1.4) solid #93c9f4;
+            border-radius: 50%;
+
+            box-shadow:
+                0 calc(var(--u) * -0.5) calc(var(--u) * 2)
+                rgba(70, 130, 200, 0.25);
+        }
+
+        .fsItem {
+            padding: calc(var(--u) * 1) calc(var(--u) * 1.2);
+
+            font-family: inherit;
+            font-size: calc(var(--u) * 3.2);
+            font-weight: 600;
+            line-height: 1;
+            white-space: nowrap;
+
+            color: #3d8fda;
+            background: transparent;
+
+            text-shadow:
+                calc(var(--u) * 0.350) calc(var(--u) * 0.000) #fff,
+                calc(var(--u) * -0.350) calc(var(--u) * 0.000) #fff,
+                calc(var(--u) * 0.000) calc(var(--u) * 0.350) #fff,
+                calc(var(--u) * 0.000) calc(var(--u) * -0.350) #fff,
+                calc(var(--u) * 0.245) calc(var(--u) * 0.245) #fff,
+                calc(var(--u) * -0.245) calc(var(--u) * 0.245) #fff,
+                calc(var(--u) * 0.245) calc(var(--u) * -0.245) #fff,
+                calc(var(--u) * -0.245) calc(var(--u) * -0.245) #fff;
+
+            border: none;
+
+            cursor: pointer;
+            touch-action: manipulation;
+
+            transition: transform 0.15s ease, opacity 0.15s ease, color 0.15s ease;
+        }
+
+        .fsItem:active {
+            color: #2c6fae;
+            transform: scale(0.96);
+        }
+
+        .fsItem.current {
+            opacity: 0.5;
+            cursor: default;
+        }
+
+        .fsArrow {
+            position: absolute;
+
+            top: calc(var(--u) * 19.6);
+
+            z-index: 2;
+
+            width: calc(var(--u) * 4);
+            height: calc(var(--u) * 7);
+
+            margin-top: calc(var(--u) * -3.5);
+            padding: 0;
+
+            background: transparent;
+
+            border: none;
+
+            cursor: pointer;
+            touch-action: manipulation;
+
+            filter: drop-shadow(0 0 calc(var(--u) * 0.35) #fff);
+        }
+
+        #fsPrev {
+            left: calc(var(--u) * 25.1);
+        }
+
+        #fsNext {
+            left: calc(var(--u) * 70.5);
+        }
+
+        .fsArrow svg {
+            display: block;
+
+            width: 100%;
+            height: 100%;
+        }
+
+        .fsArrow path {
+            fill: none;
+            stroke: #3d8fda;
+            stroke-width: 6;
+            stroke-linejoin: round;
+        }
+
+        .fsArrow:active {
+            transform: scale(0.92);
+        }
+
+        #fsGrid {
+            position: absolute;
+
+            left: calc(var(--u) * 32.5);
+            top: calc(var(--u) * 6.5);
+
+            z-index: 2;
+
+            display: grid;
+            grid-template-columns: repeat(2, calc(var(--u) * 16));
+            column-gap: calc(var(--u) * 3);
+            row-gap: calc(var(--u) * 2.2);
+        }
+
+        .fsSlot {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: calc(var(--u) * 0.6);
+
+            padding: 0;
+
+            font-family: "PT Sans", sans-serif;
+            font-size: calc(var(--u) * 1.7);
+            white-space: nowrap;
+
+            color: #444;
+            background: transparent;
+
+            border: none;
+
+            cursor: pointer;
+            touch-action: manipulation;
+
+            transition: transform 0.15s ease;
+        }
+
+        .fsSlot:active:not(.inactive) {
+            transform: scale(0.98);
+        }
+
+        .fsSlot.inactive {
+            cursor: default;
+        }
+
+        .fsThumb {
+            display: block;
+
+            width: calc(var(--u) * 16);
+            height: calc(var(--u) * 9);
+        }
+
+        .fsEmpty {
+            background: #bcd9f3;
+        }
+
+        /* light pill behind the text so it stays readable over the checkerboard */
+
+        .fsLabel {
+            padding: calc(var(--u) * 0.15) calc(var(--u) * 1.2);
+
+            background: rgba(255, 255, 255, 0.88);
+
+            border-radius: 999px;
+        }
+
+        #fsPages {
+            position: absolute;
+
+            left: calc(var(--u) * 32.5);
+            top: calc(var(--u) * 34.6);
+
+            z-index: 2;
+
+            box-sizing: border-box;
+            width: calc(var(--u) * 35);
+
+            display: flex;
+            justify-content: center;
+            gap: calc(var(--u) * 0.5);
+
+            padding: calc(var(--u) * 0.2) 0;
+
+            background: rgba(255, 255, 255, 0.88);
+
+            border-radius: 999px;
+        }
+
+        #fsPages button {
+            width: calc(var(--u) * 3.3);
+
+            padding: 0;
+
+            font-family: "PT Sans", sans-serif;
+            font-size: calc(var(--u) * 2.3);
+            line-height: 1.4;
+
+            color: #a3a3a3;
+            background: transparent;
+
+            border: none;
+
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+
+        #fsPages button.on {
+            color: #3d8fda;
+        }
+
+        /* ============================================================
            STORY SCREEN (dialogue box) + FADE
            ============================================================ */
 
@@ -1429,8 +1781,8 @@
         #vnBox {
             position: absolute;
 
-            left: calc(var(--u) * 1.8);
-            right: calc(var(--u) * 1.8);
+            left: calc(var(--u) * 12);
+            right: calc(var(--u) * 12);
             bottom: calc(var(--u) * 1.8);
 
             height: calc(var(--u) * 16.5);
@@ -1446,19 +1798,19 @@
 
             margin-bottom: calc(var(--u) * -0.3);
 
-            min-width: calc(var(--u) * 20);
+            min-width: calc(var(--u) * 16);
             box-sizing: border-box;
 
-            padding: calc(var(--u) * 1.1) calc(var(--u) * 2.4);
+            padding: calc(var(--u) * 0.9) calc(var(--u) * 2);
 
-            font-size: calc(var(--u) * 2.8);
+            font-size: calc(var(--u) * 2.2);
             line-height: 1.15;
             white-space: nowrap;
 
             color: #000;
             background: #fff;
 
-            border-radius: calc(var(--u) * 1.6) calc(var(--u) * 1.6) 0 0;
+            border-radius: calc(var(--u) * 1.4) calc(var(--u) * 1.4) 0 0;
         }
 
         #vnPanel {
@@ -1541,21 +1893,21 @@
 
             z-index: 1;
 
-            font-size: calc(var(--u) * 2.7);
+            font-size: calc(var(--u) * 2);
             line-height: 1.35;
             white-space: pre-wrap;
 
             color: #fff;
 
             text-shadow:
-                calc(var(--u) * 0.300) calc(var(--u) * 0.000) #000,
-                calc(var(--u) * -0.300) calc(var(--u) * 0.000) #000,
-                calc(var(--u) * 0.000) calc(var(--u) * 0.300) #000,
-                calc(var(--u) * 0.000) calc(var(--u) * -0.300) #000,
-                calc(var(--u) * 0.210) calc(var(--u) * 0.210) #000,
-                calc(var(--u) * -0.210) calc(var(--u) * 0.210) #000,
-                calc(var(--u) * 0.210) calc(var(--u) * -0.210) #000,
-                calc(var(--u) * -0.210) calc(var(--u) * -0.210) #000;
+                calc(var(--u) * 0.225) calc(var(--u) * 0.000) #000,
+                calc(var(--u) * -0.225) calc(var(--u) * 0.000) #000,
+                calc(var(--u) * 0.000) calc(var(--u) * 0.225) #000,
+                calc(var(--u) * 0.000) calc(var(--u) * -0.225) #000,
+                calc(var(--u) * 0.158) calc(var(--u) * 0.158) #000,
+                calc(var(--u) * -0.158) calc(var(--u) * 0.158) #000,
+                calc(var(--u) * 0.158) calc(var(--u) * -0.158) #000,
+                calc(var(--u) * -0.158) calc(var(--u) * -0.158) #000;
         }
 
         /* letters that are not written yet keep their space (no reflow) */
@@ -1571,17 +1923,17 @@
 
             box-sizing: border-box;
 
-            width: calc(var(--u) * 1.15);
-            height: calc(var(--u) * 1.15);
+            width: calc(var(--u) * 0.9);
+            height: calc(var(--u) * 0.9);
 
-            margin: 0 calc(var(--u) * 0.2);
+            margin: 0 calc(var(--u) * 0.16);
 
             vertical-align: middle;
 
             background: #fff;
 
-            border: calc(var(--u) * 0.28) solid #000;
-            border-radius: calc(var(--u) * 0.3);
+            border: calc(var(--u) * 0.22) solid #000;
+            border-radius: calc(var(--u) * 0.24);
         }
 
         #vnMenu {
@@ -1595,27 +1947,27 @@
 
             display: flex;
             justify-content: center;
-            gap: calc(var(--u) * 2.2);
+            gap: calc(var(--u) * 1.8);
         }
 
         .vnBtn {
-            padding: calc(var(--u) * 0.4) calc(var(--u) * 1.6);
+            padding: calc(var(--u) * 0.4) calc(var(--u) * 1.4);
 
             font-family: "PT Sans", sans-serif;
-            font-size: calc(var(--u) * 2.5);
+            font-size: calc(var(--u) * 2);
 
             color: #fff;
             background: transparent;
 
             text-shadow:
-                calc(var(--u) * 0.250) calc(var(--u) * 0.000) #000,
-                calc(var(--u) * -0.250) calc(var(--u) * 0.000) #000,
-                calc(var(--u) * 0.000) calc(var(--u) * 0.250) #000,
-                calc(var(--u) * 0.000) calc(var(--u) * -0.250) #000,
-                calc(var(--u) * 0.175) calc(var(--u) * 0.175) #000,
-                calc(var(--u) * -0.175) calc(var(--u) * 0.175) #000,
-                calc(var(--u) * 0.175) calc(var(--u) * -0.175) #000,
-                calc(var(--u) * -0.175) calc(var(--u) * -0.175) #000;
+                calc(var(--u) * 0.190) calc(var(--u) * 0.000) #000,
+                calc(var(--u) * -0.190) calc(var(--u) * 0.000) #000,
+                calc(var(--u) * 0.000) calc(var(--u) * 0.190) #000,
+                calc(var(--u) * 0.000) calc(var(--u) * -0.190) #000,
+                calc(var(--u) * 0.133) calc(var(--u) * 0.133) #000,
+                calc(var(--u) * -0.133) calc(var(--u) * 0.133) #000,
+                calc(var(--u) * 0.133) calc(var(--u) * -0.133) #000,
+                calc(var(--u) * -0.133) calc(var(--u) * -0.133) #000;
 
             border: none;
 
@@ -2981,18 +3333,27 @@
                 </div>
             </div>
 
-            <!-- LOAD SAVE -->
+            <!-- SAVE / LOAD SCREEN -->
 
-            <div class="overlay" id="loadOverlay">
-                <div class="panel">
-                    <button class="panelClose" type="button" data-close aria-label="Close">&times;</button>
+            <div id="fileScreen">
 
-                    <h2 class="panelTitle">Load Save</h2>
+                <div id="fsChecker"></div>
 
-                    <div id="slotList"></div>
+                <div id="fsTitle">Load</div>
+                <div id="fsMenu"></div>
 
-                    <p class="panelNote" id="loadNote"></p>
-                </div>
+                <button class="fsArrow" id="fsPrev" type="button" aria-label="Previous page">
+                    <svg viewBox="0 0 40 70"><path d="M34 5L6 35l28 30z"/></svg>
+                </button>
+
+                <div id="fsGrid"></div>
+
+                <button class="fsArrow" id="fsNext" type="button" aria-label="Next page">
+                    <svg viewBox="0 0 40 70"><path d="M6 5l28 30L6 65z"/></svg>
+                </button>
+
+                <div id="fsPages"></div>
+
             </div>
 
             <!-- SETTINGS -->
@@ -3018,6 +3379,12 @@
                     <div class="settingRow">
                         <label for="setText">Text Speed</label>
                         <input type="range" id="setText" data-setting="textSpeed" min="10" max="100">
+                        <output></output>
+                    </div>
+
+                    <div class="settingRow">
+                        <label for="setUi">UI Size</label>
+                        <input type="range" id="setUi" data-setting="uiScale" min="40" max="110">
                         <output></output>
                     </div>
 
@@ -3851,6 +4218,21 @@
                 "--u",
                 unit() + "px"
             );
+
+            scene.style.setProperty(
+                "--U",
+                unit() + "px"
+            );
+        }
+
+        /* Settings -> UI Size: scales Evermore OS and the panels (see --k in the CSS) */
+
+        function applyUiScale() {
+
+            scene.style.setProperty(
+                "--k",
+                String(gameSettings.uiScale / 100)
+            );
         }
 
         updateUnit();
@@ -3865,7 +4247,7 @@
 
         const SAVE_KEY = "foreverTogether.saves";
         const SETTINGS_KEY = "foreverTogether.settings";
-        const SLOT_COUNT = 3;
+        const SLOT_COUNT = 36;      /* 9 pages of 4 */
 
         function readStore(key, fallback) {
 
@@ -3928,7 +4310,12 @@
         const settingDefaults = {
             music: 80,
             sound: 80,
-            textSpeed: 60
+            textSpeed: 60,
+            uiScale: 65
+        };
+
+        const settingRanges = {
+            uiScale: [40, 110]
         };
 
         const gameSettings = window.gameSettings =
@@ -3944,11 +4331,15 @@
 
                 if (Number.isFinite(value)) {
 
+                    const range = settingRanges[key] || [0, 100];
+
                     gameSettings[key] =
-                        Math.max(0, Math.min(100, value));
+                        Math.max(range[0], Math.min(range[1], value));
                 }
             });
         })();
+
+        applyUiScale();
 
         /* ============================================================
            SCREEN FADE
@@ -4032,21 +4423,16 @@
         const flash = document.getElementById("flash");
 
         const nameOverlay = document.getElementById("nameOverlay");
-        const loadOverlay = document.getElementById("loadOverlay");
         const settingsOverlay = document.getElementById("settingsOverlay");
 
         const overlays = [
             nameOverlay,
-            loadOverlay,
             settingsOverlay
         ];
 
         const nameInput = document.getElementById("nameInput");
         const nameConfirm = document.getElementById("nameConfirm");
         const nameNote = document.getElementById("nameNote");
-
-        const slotList = document.getElementById("slotList");
-        const loadNote = document.getElementById("loadNote");
 
         let menuShown = false;
 
@@ -4111,6 +4497,7 @@
 
                 closeOverlays();
                 closeStartMenu();
+                closeFileScreen();
             }
         });
 
@@ -4120,10 +4507,7 @@
 
             nameInput.value = "";
 
-            nameNote.textContent =
-                saves.every(Boolean)
-                    ? "All save slots are full. Slot 1 will be overwritten."
-                    : "";
+            nameNote.textContent = "";
 
             openOverlay(nameOverlay);
 
@@ -4156,21 +4540,9 @@
                 return;
             }
 
-            let slot = saves.findIndex(save => !save);
+            /* nothing is saved until the player saves (Save Game) */
 
-            if (slot === -1) {
-                slot = 0;
-            }
-
-            saves[slot] = {
-                name: name,
-                savedAt: Date.now(),
-                line: 0
-            };
-
-            persistSaves();
-
-            enterStory(name, slot, 0);
+            enterStory(name, 0);
         }
 
         nameConfirm.addEventListener("click", confirmName);
@@ -4189,7 +4561,7 @@
             }
         });
 
-        /* LOAD SAVE */
+        /* save dates look like 09/20/26 03:35 PM */
 
         function formatSaveDate(time) {
 
@@ -4197,63 +4569,15 @@
 
             return (
                 date.toLocaleDateString(
-                    undefined,
-                    { month: "short", day: "numeric" }
+                    "en-US",
+                    { month: "2-digit", day: "2-digit", year: "2-digit" }
                 ) +
-                ", " +
+                " " +
                 date.toLocaleTimeString(
-                    undefined,
-                    { hour: "numeric", minute: "2-digit" }
+                    "en-US",
+                    { hour: "2-digit", minute: "2-digit" }
                 )
             );
-        }
-
-        function renderSlots() {
-
-            slotList.textContent = "";
-
-            saves.forEach((save, index) => {
-
-                const button = document.createElement("button");
-
-                button.type = "button";
-                button.className = "slot";
-                button.disabled = !save;
-
-                const label = document.createElement("span");
-
-                const number = document.createElement("small");
-                number.textContent = "Slot " + (index + 1);
-
-                const name = document.createElement("span");
-                name.textContent = save ? save.name : "Empty";
-
-                label.append(number, name);
-                button.append(label);
-
-                if (save) {
-
-                    const date = document.createElement("span");
-
-                    date.className = "slotDate";
-                    date.textContent = formatSaveDate(save.savedAt);
-
-                    button.append(date);
-
-                    button.addEventListener("click", () => {
-                        enterStory(save.name, index, save.line);
-                    });
-                }
-
-                slotList.append(button);
-            });
-
-            loadNote.textContent =
-                saves.some(Boolean)
-                    ? ""
-                    : "No saves yet. Start a new game first.";
-
-            loadNote.style.color = "#7a86b4";
         }
 
         /* SETTINGS */
@@ -4276,6 +4600,11 @@
 
                     writeStore(SETTINGS_KEY, gameSettings);
                 });
+
+                if (key === "uiScale") {
+
+                    input.addEventListener("change", applyUiScale);
+                }
             });
 
         const eraseButton = document.getElementById("btnErase");
@@ -4311,6 +4640,10 @@
 
             persistSaves();
 
+            if (fileScreen.classList.contains("open")) {
+                renderFileScreen();
+            }
+
             eraseArmed = false;
 
             eraseButton.textContent = "Save data erased";
@@ -4338,7 +4671,6 @@
         ];
 
         let vnPlayer = "";
-        let vnSlot = 0;
         let vnLine = 0;
         let vnReady = false;
         let vnTyping = null;
@@ -4545,27 +4877,15 @@
             }, 1600);
         }
 
-        function saveGame() {
-
-            saves[vnSlot] = {
-                name: vnPlayer,
-                savedAt: Date.now(),
-                line: vnLine
-            };
-
-            persistSaves();
-
-            showToast("Game saved");
-        }
-
-        function enterStory(name, slot, line) {
+        function enterStory(name, line) {
 
             if (transitioning) {
                 return;
             }
 
             vnPlayer = name;
-            vnSlot = slot;
+
+            vnReady = false;
 
             vnLine = Math.min(Math.max(Number(line) || 0, 0), vnScript.length - 1);
 
@@ -4575,14 +4895,16 @@
             blackoutThen(() => {
 
                 closeOverlays();
+                closeFileScreen();
 
                 stopTyping();
 
                 vnText.textContent = "";
                 vnName.textContent = name;
 
-                scene.classList.add("covered");
                 vnScene.classList.add("show");
+
+                updateCovered();
 
             }, null, {
                 fadeIn: 800,
@@ -4606,10 +4928,11 @@
                 stopTyping();
 
                 closeOverlays();
+                closeFileScreen();
 
                 vnScene.classList.remove("show");
 
-                scene.classList.remove("covered");
+                updateCovered();
             });
         }
 
@@ -4622,7 +4945,7 @@
             vnAdvance();
         });
 
-        document.getElementById("vnSave").addEventListener("click", saveGame);
+        document.getElementById("vnSave").addEventListener("click", () => openFileScreen("save"));
         document.getElementById("vnSkip").addEventListener("click", vnSkip);
         document.getElementById("vnSettings").addEventListener("click", openSettings);
 
@@ -4632,6 +4955,7 @@
 
             if (
                 !vnScene.classList.contains("show") ||
+                fileScreen.classList.contains("open") ||
                 overlays.some(overlay => overlay.classList.contains("open"))
             ) {
                 return;
@@ -4649,6 +4973,389 @@
             }
         });
 
+        /* ============================================================
+           SAVE / LOAD SCREEN (4 slots per page, 9 pages)
+           ============================================================ */
+
+        const fileScreen = document.getElementById("fileScreen");
+        const fsTitle = document.getElementById("fsTitle");
+        const fsMenu = document.getElementById("fsMenu");
+        const fsGrid = document.getElementById("fsGrid");
+        const fsPages = document.getElementById("fsPages");
+
+        const FS_PER_PAGE = 4;
+        const FS_PAGES = SLOT_COUNT / FS_PER_PAGE;
+
+        let fsMode = "load";
+        let fsPage = 0;
+        let fsOverwrite = -1;
+        let fsOverwriteTimer = null;
+        let fsCoverTimer = null;
+
+        /* While a full-screen layer (story, OS, this screen) is on top, the title
+           screen underneath is hidden so nothing bright leaks out at the edges. */
+
+        function updateCovered() {
+
+            const covered =
+                vnScene.classList.contains("show") ||
+                osRoot.classList.contains("show") ||
+                fileScreen.classList.contains("open");
+
+            scene.classList.toggle("covered", covered);
+        }
+
+        function openFileScreen(mode) {
+
+            fsMode = mode;
+            fsOverwrite = -1;
+
+            closeOverlays();
+
+            renderFileScreen();
+
+            fileScreen.classList.add("open");
+
+            /* hide the title only once this screen has faded in */
+
+            clearTimeout(fsCoverTimer);
+
+            fsCoverTimer = setTimeout(updateCovered, 300);
+        }
+
+        function closeFileScreen() {
+
+            clearTimeout(fsCoverTimer);
+
+            fileScreen.classList.remove("open");
+
+            updateCovered();
+        }
+
+        /* the little "screenshot" of a save, drawn from the save itself */
+
+        function roundedRect(ctx, x, y, w, h, r) {
+
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.arcTo(x + w, y, x + w, y + h, r);
+            ctx.arcTo(x + w, y + h, x, y + h, r);
+            ctx.arcTo(x, y + h, x, y, r);
+            ctx.arcTo(x, y, x + w, y, r);
+            ctx.closePath();
+        }
+
+        function drawThumb(canvas, save) {
+
+            const ctx = canvas.getContext("2d");
+
+            const s = canvas.width / 100;
+
+            ctx.fillStyle = "#000";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const boxX = 12 * s;
+            const boxW = 76 * s;
+            const boxH = 16.5 * s;
+            const boxY = canvas.height - 18.3 * s;
+
+            /* name tab */
+
+            const tabX = boxX + 2.6 * s;
+            const tabH = 4.4 * s;
+
+            ctx.fillStyle = "#fff";
+
+            roundedRect(ctx, tabX, boxY - tabH, 16 * s, tabH + 3 * s, 1.4 * s);
+
+            ctx.fill();
+
+            ctx.fillStyle = "#000";
+            ctx.font = (2.2 * s) + "px 'PT Sans', sans-serif";
+            ctx.textBaseline = "alphabetic";
+
+            ctx.fillText(save.name, tabX + 2 * s, boxY - 1.1 * s);
+
+            /* box */
+
+            const gradient = ctx.createLinearGradient(0, boxY, 0, boxY + boxH);
+
+            gradient.addColorStop(0, "#0093ab");
+            gradient.addColorStop(0.45, "#0082b0");
+            gradient.addColorStop(1, "#005ea8");
+
+            roundedRect(ctx, boxX, boxY, boxW, boxH, 1.6 * s);
+
+            ctx.fillStyle = gradient;
+            ctx.fill();
+
+            ctx.lineWidth = 0.4 * s;
+            ctx.strokeStyle = "#fff";
+            ctx.stroke();
+
+            /* the line of text that was on screen */
+
+            const line = vnScript[Math.min(save.line, vnScript.length - 1)];
+
+            let x = boxX + 2.8 * s;
+
+            const y = boxY + 4.6 * s;
+
+            ctx.lineWidth = 0.5 * s;
+            ctx.lineJoin = "round";
+
+            tokenize(line ? line.text : "").slice(0, 60).forEach(token => {
+
+                if (token.dot) {
+
+                    const size = 0.9 * s;
+
+                    ctx.fillStyle = "#fff";
+                    ctx.strokeStyle = "#000";
+                    ctx.lineWidth = 0.22 * s;
+
+                    ctx.fillRect(x + 0.1 * s, y - size, size, size);
+                    ctx.strokeRect(x + 0.1 * s, y - size, size, size);
+
+                    x += size + 0.4 * s;
+
+                } else {
+
+                    ctx.font = "600 " + (2 * s) + "px 'PT Sans', sans-serif";
+                    ctx.lineWidth = 0.5 * s;
+                    ctx.strokeStyle = "#000";
+                    ctx.fillStyle = "#fff";
+
+                    ctx.strokeText(token.c, x, y);
+                    ctx.fillText(token.c, x, y);
+
+                    x += ctx.measureText(token.c).width;
+                }
+            });
+        }
+
+        function fsMenuItems() {
+
+            const inGame = vnScene.classList.contains("show");
+
+            const items = [];
+
+            if (!inGame) {
+
+                items.push({
+                    label: "New Game",
+                    action: () => {
+                        closeFileScreen();
+                        openNewGame();
+                    }
+                });
+            }
+
+            if (inGame) {
+
+                items.push({
+                    label: "Save",
+                    mode: "save",
+                    action: () => openFileScreen("save")
+                });
+            }
+
+            items.push({
+                label: "Load",
+                mode: "load",
+                action: () => openFileScreen("load")
+            });
+
+            items.push({ label: "Settings", action: openSettings });
+
+            items.push(
+                inGame
+                    ? { label: "Title", action: leaveStory }
+                    : { label: "Exit", action: exitToOS }
+            );
+
+            items.push({ label: "Return", action: closeFileScreen });
+
+            return items;
+        }
+
+        function renderFileScreen() {
+
+            fsTitle.textContent = fsMode === "save" ? "Save" : "Load";
+
+            /* side menu */
+
+            fsMenu.textContent = "";
+
+            fsMenuItems().forEach(item => {
+
+                const button = document.createElement("button");
+
+                button.type = "button";
+                button.className = "fsItem";
+                button.textContent = item.label;
+
+                if (item.mode === fsMode) {
+
+                    button.classList.add("current");
+                    button.disabled = true;
+                }
+
+                button.addEventListener("click", item.action);
+
+                fsMenu.append(button);
+            });
+
+            /* the four slots of this page */
+
+            fsGrid.textContent = "";
+
+            for (let i = 0; i < FS_PER_PAGE; i++) {
+
+                const index = fsPage * FS_PER_PAGE + i;
+                const save = saves[index];
+
+                const slot = document.createElement("button");
+
+                slot.type = "button";
+                slot.className = "fsSlot";
+
+                let thumb;
+
+                if (save) {
+
+                    thumb = document.createElement("canvas");
+
+                    thumb.width = 320;
+                    thumb.height = 180;
+
+                    drawThumb(thumb, save);
+
+                } else {
+
+                    thumb = document.createElement("div");
+
+                    thumb.className = "fsEmpty";
+                }
+
+                thumb.classList.add("fsThumb");
+
+                const label = document.createElement("span");
+
+                label.className = "fsLabel";
+                label.textContent = save ? formatSaveDate(save.savedAt) : "Empty Slot";
+
+                slot.append(thumb, label);
+
+                if (fsMode === "load" && !save) {
+                    slot.classList.add("inactive");
+                }
+
+                slot.addEventListener("click", () => fsSlotClick(index, label));
+
+                fsGrid.append(slot);
+            }
+
+            /* page numbers */
+
+            fsPages.textContent = "";
+
+            for (let page = 0; page < FS_PAGES; page++) {
+
+                const button = document.createElement("button");
+
+                button.type = "button";
+                button.textContent = String(page + 1);
+
+                if (page === fsPage) {
+                    button.classList.add("on");
+                }
+
+                button.addEventListener("click", () => {
+
+                    fsPage = page;
+
+                    renderFileScreen();
+                });
+
+                fsPages.append(button);
+            }
+        }
+
+        function fsSlotClick(index, label) {
+
+            const save = saves[index];
+
+            if (fsMode === "load") {
+
+                if (save) {
+                    enterStory(save.name, save.line);
+                }
+
+                return;
+            }
+
+            if (!vnScene.classList.contains("show")) {
+                return;
+            }
+
+            /* saving over another save asks for a second tap */
+
+            if (save && fsOverwrite !== index) {
+
+                fsOverwrite = index;
+
+                label.textContent = "Overwrite?";
+
+                clearTimeout(fsOverwriteTimer);
+
+                fsOverwriteTimer = setTimeout(() => {
+
+                    fsOverwrite = -1;
+
+                    label.textContent = formatSaveDate(save.savedAt);
+
+                }, 2500);
+
+                return;
+            }
+
+            clearTimeout(fsOverwriteTimer);
+
+            fsOverwrite = -1;
+
+            saves[index] = {
+                name: vnPlayer,
+                savedAt: Date.now(),
+                line: vnLine
+            };
+
+            persistSaves();
+
+            renderFileScreen();
+
+            const fresh =
+                fsGrid.children[index % FS_PER_PAGE].querySelector(".fsLabel");
+
+            fresh.textContent = "Saved!";
+
+            setTimeout(() => {
+
+                fresh.textContent = formatSaveDate(saves[index].savedAt);
+
+            }, 1200);
+        }
+
+        function fsTurn(step) {
+
+            fsPage = (fsPage + step + FS_PAGES) % FS_PAGES;
+
+            renderFileScreen();
+        }
+
+        document.getElementById("fsPrev").addEventListener("click", () => fsTurn(-1));
+        document.getElementById("fsNext").addEventListener("click", () => fsTurn(1));
+
         /* MENU BUTTONS */
 
         document
@@ -4657,12 +5364,7 @@
 
         document
             .getElementById("btnLoad")
-            .addEventListener("click", () => {
-
-                renderSlots();
-
-                openOverlay(loadOverlay);
-            });
+            .addEventListener("click", () => openFileScreen("load"));
 
         function openSettings() {
 
@@ -4680,17 +5382,20 @@
             .getElementById("btnSettings")
             .addEventListener("click", openSettings);
 
+        function exitToOS() {
+
+            blackoutThen(() => {
+
+                closeOverlays();
+                closeFileScreen();
+
+                bootOS();
+            });
+        }
+
         document
             .getElementById("btnExit")
-            .addEventListener("click", () => {
-
-                blackoutThen(() => {
-
-                    closeOverlays();
-
-                    bootOS();
-                });
-            });
+            .addEventListener("click", exitToOS);
 
         /* ============================================================
            Evermore OS
@@ -4993,7 +5698,7 @@
 
             osRoot.classList.add("show");
 
-            scene.classList.add("covered");
+            updateCovered();
 
             osOff.classList.remove("show");
             osDesktop.classList.remove("show");
@@ -5311,8 +6016,8 @@
 
             const win = makeElement("div", "win");
 
-            win.style.left = (u * (14 + count * 2.5)) + "px";
-            win.style.top = (u * (2 + count * 2.5)) + "px";
+            win.style.left = (u * (16 + count * 3)) + "px";
+            win.style.top = (u * (5 + count * 3)) + "px";
 
             /* title bar */
 
