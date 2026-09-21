@@ -1,7 +1,8 @@
 name: Build iOS app (unsigned IPA)
 
 # Runs by hand (Actions tab -> Run workflow) and every time index.html changes.
-# Needs only index.html in the repo root. Everything else is generated here.
+# Needs index.html in the repo root (and an optional fonts/ folder next to it).
+# Everything else is generated here.
 
 on:
   workflow_dispatch:
@@ -9,6 +10,7 @@ on:
     branches: [main, master]
     paths:
       - index.html
+      - fonts/**
       - .github/workflows/build-ios.yml
 
 jobs:
@@ -31,6 +33,7 @@ jobs:
         run: |
           mkdir www
           cp index.html www/index.html
+          if [ -d fonts ]; then cp -R fonts www/fonts; fi
           npm init -y
           npm install @capacitor/core @capacitor/cli @capacitor/ios
           cat > capacitor.config.json <<'EOF'
